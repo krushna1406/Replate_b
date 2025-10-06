@@ -21,17 +21,18 @@
     <div class="container nav">
       <a class="brand" href="#">
         <img src="images/logo1.png" alt="Replate Logo" class="logo" />
-        <span>Replate</span>
+        <span style="font-size: large;">𝐑𝐞𝐩𝐥𝐚𝐭𝐞</span>
       </a>
       <nav style="display:flex; gap:20px; align-items:center;">
         <a class="link" href="#how">How it works</a>
         <a class="link" href="#listings">Nearby surplus</a>
+        <a class="link" href="#second-path">Biogas</a>
         <a class="link" href="#">Impact</a>
         <div class="nav-cta">
-        <a href="login.html" class="btn btn-ghost">Log in</a>
-        <a href="signup.html" class="btn btn-primary">Sign Up</a>
+          <a href="login.html" class="btn btn-ghost">Log in</a>
+          <a href="signup.html" class="btn btn-primary">Sign Up</a>
 
-        <button class="btn btn-primary" id="open-donate">Offer Surplus</button>
+          <button class="btn btn-primary" id="open-donate">Offer Surplus</button>
         </div>
       </nav>
     </div>
@@ -55,7 +56,6 @@
           notify everyone—automatically.
         </p>
         <div class="hero-cta">
-          <div class="btn btn-ghost">Live Traceability</div>
           <div class="btn btn-ghost">Consent & Safety Checks</div>
           <div class="btn btn-ghost">
             <a href="notifications.html">Notifications</a>
@@ -76,13 +76,13 @@
   <section class="section" id="how">
     <div class="container">
       <h2>How Replate Works</h2>
-      <p class="muted">Simple 3‑step flow for Restaurants, Events & NGOs.</p>
+      <p class="muted">Simple 3-step flow for Restaurants, Events & NGOs.</p>
       <div class="grid-3" style="margin-top:14px">
         <div class="card step">
           <div class="num">1</div>
           <div>
             <h3>List your surplus</h3>
-            <p class="muted">Add cuisine, quantity, veg/non‑veg tags, prep time, and safe‑by window. We auto‑flag
+            <p class="muted">Add cuisine, quantity, veg/non-veg tags, prep time, and safe-by window. We auto-flag
               allergen info.</p>
           </div>
         </div>
@@ -90,15 +90,14 @@
           <div class="num">2</div>
           <div>
             <h3>NGOs claim & schedule</h3>
-            <p class="muted">Nearby NGOs get a ping. They pick a slot, assign a volunteer, and generate a pickup QR.</p>
+            <p class="muted">Nearby NGOs get a ping. They claim the food and confirms pickup</p>
           </div>
         </div>
         <div class="card step">
           <div class="num">3</div>
           <div>
             <h3>Handover & receipt</h3>
-            <p class="muted">QR scan confirms handover. Both sides receive a digital receipt and basic compliance
-              checklist.</p>
+            <p class="muted">Volunteer then reaches to the pickup location and takes the surplus food.</p>
           </div>
         </div>
       </div>
@@ -134,6 +133,20 @@
     </div>
   </section>
 
+  <section id="second-path" class="section-padding">
+    <div class="biogas">
+      <h1>Beyond Food: Biogas Processing</h1>
+    </div>
+    <div class="biogas biogas-text" style="font-size: large; ">
+      <p>Not all food is fit for human consumption. At Replate, we ensure that no food goes to waste. Expired or
+        inedible food is sent to our partner facilities where it is converted into clean, renewable biogas. This process
+        not only prevents landfill waste but also creates a sustainable energy source for communities.</p>
+    </div>
+    <div class="biogas">
+      <img src="images/biogas_process.png" alt="Illustration of a biogas plant">
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer>
     <div class="container foot">
@@ -142,26 +155,27 @@
           <img src="images/logo1.png" alt="">
           <span>Replate</span>
         </div>
-        <p>Built for zero‑waste cities. Empowering communities with responsible surplus distribution.</p>
+        <p>Built for zero-waste cities. Empowering communities with responsible food waste management. This is the small
+          step towards healthy eco-system.</p>
       </div>
       <div>
         <h4>For Partners</h4>
-        <a href="#">Restaurant Onboarding</a><br />
+        <!-- <a href="#">Restaurant Onboarding</a><br /> -->
         <a href="https://en.wikipedia.org/wiki/Non-governmental_organization" target="_blank">NGO Verification</a><br />
-        <a href="#">Volunteer Handbook</a>
+        <a href="https://en.wikipedia.org/wiki/Biogas" target="_blank">Biogas Processing</a>
       </div>
       <div>
         <h4>Compliance</h4>
         <a href="https://www.fssai.gov.in/cms/inspection-matrices.php" target="_blank">Food Safety Checklist</a><br />
         <a href="https://sharefood.eatrightindia.gov.in/pdf/Guidance-Document-For-Recovery-Agency.pdf"
           target="_blank">Allergen Guidelines</a><br />
-        <a href="#">Digital Receipts</a>
+        <!-- <a href="#">Digital Receipts</a> -->
       </div>
       <div>
         <h4>Contact</h4>
-        <a href="#">consumercare@replate.com</a><br />
-        <a href="9552949772">+91 98765 43210</a><br />
-        <a href="">WhatsApp</a>
+        <a href="https://mail.google.com/mail/u/0/#inbox?compose=jrjtXJTzpTnbFPRGwJDqxSPjTKXGwVFrNsjDXjCXrfvfgBznxcmTzqHgQLLHhmVzBKcRRLbX" target="_blank">replate.test@gmail.com</a><br />
+        <!-- <a href="9552949772">+91 98765 43210</a><br /> -->
+        <!-- <a href="">WhatsApp</a> -->
       </div>
     </div>
   </footer>
@@ -238,31 +252,31 @@
     </div>
   </div>
   <!-- Login Modal -->
-<div class="modal" id="loginModal">
-  <div class="modal-card">
-    <div class="modal-head">
-      <strong>Login</strong>
-      <button title="Close" class="btn btn-ghost" id="closeLogin">✕</button>
+  <div class="modal" id="loginModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <strong>Login</strong>
+        <button title="Close" class="btn btn-ghost" id="closeLogin">✕</button>
+      </div>
+      <form class="modal-body" id="loginForm">
+        <div class="row">
+          <div class="col">
+            <label>Email</label>
+            <input type="email" name="email" class="input" required />
+          </div>
+          <div class="col">
+            <label>Password</label>
+            <input type="password" name="password" class="input" required />
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px">
+          <button type="button" class="btn btn-ghost" id="cancelLogin">Cancel</button>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+        <p id="loginMsg" class="help" style="margin-top:10px"></p>
+      </form>
     </div>
-    <form class="modal-body" id="loginForm">
-      <div class="row">
-        <div class="col">
-          <label>Email</label>
-          <input type="email" name="email" class="input" required />
-        </div>
-        <div class="col">
-          <label>Password</label>
-          <input type="password" name="password" class="input" required />
-        </div>
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px">
-        <button type="button" class="btn btn-ghost" id="cancelLogin">Cancel</button>
-        <button type="submit" class="btn btn-primary">Login</button>
-      </div>
-      <p id="loginMsg" class="help" style="margin-top:10px"></p>
-    </form>
   </div>
-</div>
 
 
   <script src="script.js"></script>
