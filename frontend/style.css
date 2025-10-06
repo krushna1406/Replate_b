@@ -50,7 +50,7 @@
     }
 
     .login-card {
-      background: linear-gradient(180deg, rgba(47, 182, 32, 0.25), rgba(11, 83, 5, 0.25));
+      background: linear-gradient(180deg, #a7ffd1, #23332a);
       max-width: 300px;
       margin: 80px auto;
       padding: 30px 20px;
