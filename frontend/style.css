@@ -49,6 +49,16 @@
       padding: 0 20px
     }
 
+    .login-card {
+      background: linear-gradient(180deg, rgba(47, 182, 32, 0.25), rgba(11, 83, 5, 0.25));
+      max-width: 300px;
+      margin: 80px auto;
+      padding: 30px 20px;
+      border: 1px solid #00730049 ;
+      border-radius: 5px;
+      box-shadow: 0px 0px 20px 0px #2b554a;
+    }
+
     /* Header */
     header {
       position: sticky;
@@ -267,6 +277,15 @@
       width: 100%;
       padding: 12px 14px;
       background: #0c1117;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 12px;
+      color: var(--text);
+    }
+
+    .login-input {
+      width: 255px;
+      padding: 12px 14px;
+      background: rgb(0, 23, 0);
       border: 1px solid rgba(255, 255, 255, .08);
       border-radius: 12px;
       color: var(--text);

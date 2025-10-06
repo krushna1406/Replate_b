@@ -8,26 +8,27 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container" style="max-width: 400px; margin: 80px auto;">
-    <h2>Login to Replate</h2>
+  <div class="login-card">
+    <h2 style="font-size: 27px;">Login to Replate</h2>
     <form id="loginForm">
       <div class="row">
         <div class="col">
           <label>Email</label>
-          <input type="email" name="email" class="input" placeholder="you@example.com" required>
+          <input type="email" name="email" class="login-input" placeholder="example@gmail.com" required>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <label>Password</label>
-          <input type="password" name="password" class="input" placeholder="********" required>
+          <input type="password" name="password" class="login-input" placeholder="********" required>
         </div>
       </div>
       <div style="margin-top: 20px;">
         <button type="submit" class="btn btn-primary">Login</button>
       </div>
-    </form>
-    <p style="margin-top: 12px;">Don't have an account? <a href="signup.html">Sign up</a></p>
+    </form><br>
+    <hr>
+    <p style="margin-top: 12px;">Don't have an account? <a href="signup.html" style="color: rgb(63, 155, 247);">Sign up</a></p>
     <p id="loginMsg" class="help"></p>
   </div>
 

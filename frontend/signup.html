@@ -9,26 +9,27 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container" style="max-width: 400px; margin: 80px auto;">
-    <h2>Create an Account</h2>
+  <div class="login-card">
+    <h2 style="font-size: 27px;">Create an Account</h2>
     <form id="signupForm">
       <div class="row">
         <div class="col">
           <label>Email</label>
-          <input type="email" name="email" class="input" placeholder="you@example.com" required>
+          <input type="email" name="email" class="login-input" placeholder="example@gmail.com" required>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <label>Password</label>
-          <input type="password" name="password" class="input" placeholder="********" required>
+          <input type="password" name="password" class="login-input" placeholder="********" required>
         </div>
       </div>
       <div style="margin-top: 20px;">
         <button type="submit" class="btn btn-primary">Sign Up</button>
       </div>
-    </form>
-    <p style="margin-top: 12px;">Already have an account? <a href="login.html">Login</a></p>
+    </form><br>
+    <hr>
+    <p style="margin-top: 12px;">Already have an account? <a href="login.html" style="color: rgb(63, 155, 247);">Login</a></p>
     <p id="signupMsg" class="help"></p>
   </div>
 
