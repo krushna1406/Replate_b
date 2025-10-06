@@ -1,3 +1,5 @@
+//This is script.js
+
 // ----- DOM elements -----
 const modal = document.getElementById("modal");
 const openDonateBtn = document.getElementById("open-donate");

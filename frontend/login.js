@@ -1,3 +1,5 @@
+// This is login js
+
 // Get DOM elements
 const loginForm = document.getElementById("loginForm");
 const loginMsg = document.getElementById("loginMsg");

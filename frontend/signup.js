@@ -1,3 +1,5 @@
+// This is signup.js
+
 const signupForm = document.getElementById("signupForm");
 const signupMsg = document.getElementById("signupMsg");
 
