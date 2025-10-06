@@ -66,7 +66,7 @@ function renderListings(listings) {
 // tiny helper to avoid raw HTML injection
 function escapeHtml(str) {
   if (!str && str !== 0) return "";
-  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
 }
 
 // ----- Form submit: create listing -----
@@ -76,12 +76,12 @@ form.addEventListener("submit", async (e) => {
   formMsg.textContent = "Publishing...";
 
   try {
-    const token = localStorage.getItem("token"); 
+    const token = localStorage.getItem("token");
     if (!token) throw new Error("No authentication token found. Please login.");
 
     const response = await fetch("http://localhost:5000/api/listings", {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
@@ -121,16 +121,16 @@ function applyFilters() {
   let filtered = allListings.slice();
 
   if (filter) {
-    filtered = filtered.filter(l => (l.type||"").toLowerCase() === filter ||
-                                    (l.role||"").toLowerCase() === filter);
+    filtered = filtered.filter(l => (l.type || "").toLowerCase() === filter ||
+      (l.role || "").toLowerCase() === filter);
   }
 
   const term = searchInput.value.trim().toLowerCase();
   if (term) {
     filtered = filtered.filter(l =>
-      (l.name||"").toLowerCase().includes(term) ||
-      (l.address||"").toLowerCase().includes(term) ||
-      (l.notes||"").toLowerCase().includes(term)
+      (l.name || "").toLowerCase().includes(term) ||
+      (l.address || "").toLowerCase().includes(term) ||
+      (l.notes || "").toLowerCase().includes(term)
     );
   }
 

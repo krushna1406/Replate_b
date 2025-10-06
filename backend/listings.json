@@ -1,42 +1,28 @@
 [
   {
-    "role": "restaurant",
-    "name": "Rutujas foods",
-    "phone": "8605989796",
-    "address": "JM ROAD",
-    "type": "Vegetarian",
-    "qty": "6",
-    "safeBy": "2025-12-12T12:55",
-    "notes": "NA"
+    "role": "event",
+    "name": "Varhadi Restaurant",
+    "phone": "9552949772",
+    "address": "Ideal colony, Kothrud",
+    "type": "Mixed",
+    "qty": "50",
+    "safeBy": "2025-10-07T01:49",
+    "notes": "food containing peanuts",
+    "id": 1,
+    "createdBy": "rautkrishna931@gmail.com",
+    "createdAt": "2025-10-06T20:21:04.545Z"
   },
   {
-    "role": "restaurant",
-    "name": "ayush chi khanawal",
+    "role": "caterer",
+    "name": "XYZ's Kitchen",
     "phone": "1234567890",
-    "address": "vanaz metro station",
+    "address": "Shivajinagar, Pune",
     "type": "Vegetarian",
-    "qty": "6",
-    "safeBy": "2025-05-12T08:55",
-    "notes": "NA"
-  },
-  {
-    "role": "restaurant",
-    "name": "saniya pranjali khanawal",
-    "phone": "8605989796",
-    "address": "Mcoe clg",
-    "type": "Vegetarian",
-    "qty": "2",
-    "safeBy": "2025-12-12T12:55",
-    "notes": "No"
-  },
-  {
-    "role": "restaurant",
-    "name": "ok",
-    "phone": "1212",
-    "address": "ok",
-    "type": "Vegetarian",
-    "qty": "6",
-    "safeBy": "5782-04-12T12:34",
-    "notes": "o"
+    "qty": "20",
+    "safeBy": "2025-10-06T13:57",
+    "notes": "NA",
+    "id": 2,
+    "createdBy": "rutujapekam1@gmail.com",
+    "createdAt": "2025-10-06T20:41:06.548Z"
   }
 ]
