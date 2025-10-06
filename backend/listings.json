@@ -28,5 +28,15 @@
     "qty": "2",
     "safeBy": "2025-12-12T12:55",
     "notes": "No"
+  },
+  {
+    "role": "restaurant",
+    "name": "ok",
+    "phone": "1212",
+    "address": "ok",
+    "type": "Vegetarian",
+    "qty": "6",
+    "safeBy": "5782-04-12T12:34",
+    "notes": "o"
   }
 ]
