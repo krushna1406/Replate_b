@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Replate — Bridge for smart use of waste food</title>
+  <meta name="description"
+    content="Replate helps restaurants, caterers and event organizers donate surplus food to nearby NGOs and orphanages in minutes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#">
+        <img src="images/logo1.png" alt="Replate Logo" class="logo" />
+        <span>Replate</span>
+      </a>
+      <nav style="display:flex; gap:20px; align-items:center;">
+        <a class="link" href="#how">How it works</a>
+        <a class="link" href="#listings">Nearby surplus</a>
+        <a class="link" href="#">Impact</a>
+        <div class="nav-cta">
+        <a href="login.html" class="btn btn-ghost">Log in</a>
+        <a href="signup.html" class="btn btn-primary">Sign Up</a>
+
+        <button class="btn btn-primary" id="open-donate">Offer Surplus</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-wrap">
+      <div>
+        <div class="eyebrow">
+          <a href="https://en.wikipedia.org/wiki/Sustainable_Development_Goal_2" target="_blank">SDG 2 • Zero Hunger</a>
+          & <a href="https://en.wikipedia.org/wiki/Sustainable_Development_Goal_12" target="_blank">SDG 12 • Responsible
+            Consumption</a>
+        </div>
+        <h1 class="title">Turn <em style="font-style:normal; color:#92ffd1">surplus food</em> into meals, <em
+            style="font-style:normal;color:#90f3ff">not waste</em>.</h1>
+        <p class="subtitle">Replate connects <strong>restaurants</strong>, <strong>households</strong>,
+          <strong>supermarkets</strong>,
+          and <strong>wedding functions</strong> with <strong>verified NGOs</strong> and <strong>local
+            volunteers</strong>. Record every donation, consent on food safety, set lasting time, assign pickups, and
+          notify everyone—automatically.
+        </p>
+        <div class="hero-cta">
+          <div class="btn btn-ghost">Live Traceability</div>
+          <div class="btn btn-ghost">Consent & Safety Checks</div>
+          <div class="btn btn-ghost">
+            <a href="notifications.html">Notifications</a>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-primary" id="open-donate-2">Donate Surplus</button>
+          <a class="btn btn-ghost" href="#listings">Browse Nearby</a>
+        </div>
+      </div>
+      <div>
+        <img src="https://thecsrjournal.in/wp-content/uploads/2018/02/Food-Wastage.jpg" alt="Food donation">
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" id="how">
+    <div class="container">
+      <h2>How Replate Works</h2>
+      <p class="muted">Simple 3‑step flow for Restaurants, Events & NGOs.</p>
+      <div class="grid-3" style="margin-top:14px">
+        <div class="card step">
+          <div class="num">1</div>
+          <div>
+            <h3>List your surplus</h3>
+            <p class="muted">Add cuisine, quantity, veg/non‑veg tags, prep time, and safe‑by window. We auto‑flag
+              allergen info.</p>
+          </div>
+        </div>
+        <div class="card step">
+          <div class="num">2</div>
+          <div>
+            <h3>NGOs claim & schedule</h3>
+            <p class="muted">Nearby NGOs get a ping. They pick a slot, assign a volunteer, and generate a pickup QR.</p>
+          </div>
+        </div>
+        <div class="card step">
+          <div class="num">3</div>
+          <div>
+            <h3>Handover & receipt</h3>
+            <p class="muted">QR scan confirms handover. Both sides receive a digital receipt and basic compliance
+              checklist.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="strip">
+        <div class="toolbar">
+          <div class="muted">Try the demo form →</div>
+          <button class="btn btn-primary" id="open-donate-3">Create a Surplus Listing</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listings -->
+  <section class="section" id="listings">
+    <div class="container">
+      <h2>Live Surplus Near You</h2>
+      <p class="muted">Filter by cuisine, distance, and pickup window (demo data).</p>
+
+      <div class="toolbar">
+        <div class="search"><input id="search" class="input" placeholder="Search cuisine, restaurant, area" /></div>
+        <select id="filterTag" class="select">
+          <option value="">All </option>
+          <option value="veg">Vegetarian</option>
+          <option value="nonveg">Non‑Veg</option>
+          <option value="events">Event</option>
+          <option value="restaurant">Restaurant</option>
+        </select>
+        <button class="btn btn-ghost" id="reset">Reset</button>
+      </div>
+
+      <div class="list" id="list"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container foot">
+      <div>
+        <div class="brand" style="margin-bottom:8px">
+          <img src="images/logo1.png" alt="">
+          <span>Replate</span>
+        </div>
+        <p>Built for zero‑waste cities. Empowering communities with responsible surplus distribution.</p>
+      </div>
+      <div>
+        <h4>For Partners</h4>
+        <a href="#">Restaurant Onboarding</a><br />
+        <a href="https://en.wikipedia.org/wiki/Non-governmental_organization" target="_blank">NGO Verification</a><br />
+        <a href="#">Volunteer Handbook</a>
+      </div>
+      <div>
+        <h4>Compliance</h4>
+        <a href="https://www.fssai.gov.in/cms/inspection-matrices.php" target="_blank">Food Safety Checklist</a><br />
+        <a href="https://sharefood.eatrightindia.gov.in/pdf/Guidance-Document-For-Recovery-Agency.pdf"
+          target="_blank">Allergen Guidelines</a><br />
+        <a href="#">Digital Receipts</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="#">consumercare@replate.com</a><br />
+        <a href="9552949772">+91 98765 43210</a><br />
+        <a href="">WhatsApp</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal: Create Surplus Listing (Demo) -->
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <strong>Create Surplus Listing</strong>
+        <button title="Close" class="btn btn-ghost" id="close">✕</button>
+      </div>
+      <form class="modal-body" id="form">
+        <div class="row">
+          <div class="col">
+            <label>Who are you?</label>
+            <select class="select" name="role" required>
+              <option value="restaurant">Restaurant</option>
+              <option value="event">Event / Function</option>
+              <option value="caterer">Caterer</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Business / Event Name</label>
+            <input class="input" name="name" placeholder="e.g., SpiceHub Banquets" required />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div class="col">
+            <label>Contact Number</label>
+            <input class="input" name="phone" placeholder="e.g., 9876543210" required />
+            <div class="help">We will share this only with the NGO that claims your listing.</div>
+          </div>
+          <div class="col">
+            <label>Pickup Location</label>
+            <input class="input" name="address" placeholder="Area / Landmark" required />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div class="col">
+            <label>Food Type</label>
+            <select class="select" name="type" required>
+              <option>Vegetarian</option>
+              <option>Non‑Vegetarian</option>
+              <option>Mixed</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Quantity (approx.)</label>
+            <input class="input" type="number" min="1" step="1" name="qty" placeholder="Servings" required />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div class="col">
+            <label>Safe‑by time</label>
+            <input class="input" type="datetime-local" name="safeBy" placeholder="dd/mm/yyyy" />
+
+          </div>
+          <div class="col">
+            <label>Notes / Allergens</label>
+            <input class="input" name="notes" placeholder="e.g., contains nuts, dairy" />
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px">
+          <button type="button" class="btn btn-ghost" id="cancel">Cancel</button>
+          <button class="btn btn-primary" type="submit">Publish Listing</button>
+        </div>
+
+        <p id="formMsg" class="help" style="margin-top:10px"></p>
+      </form>
+    </div>
+  </div>
+  <!-- Login Modal -->
+<div class="modal" id="loginModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <strong>Login</strong>
+      <button title="Close" class="btn btn-ghost" id="closeLogin">✕</button>
+    </div>
+    <form class="modal-body" id="loginForm">
+      <div class="row">
+        <div class="col">
+          <label>Email</label>
+          <input type="email" name="email" class="input" required />
+        </div>
+        <div class="col">
+          <label>Password</label>
+          <input type="password" name="password" class="input" required />
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px">
+        <button type="button" class="btn btn-ghost" id="cancelLogin">Cancel</button>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </div>
+      <p id="loginMsg" class="help" style="margin-top:10px"></p>
+    </form>
+  </div>
+</div>
+
+
+  <script src="script.js"></script>
+  <script src="login.js"></script>
+  <script src="signup.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+[
+  {
+    "email": "admin@replate.com",
+    "password": "123456",
+    "role": "admin"
+  },
+  {
+    "email": "ruujapekam1@gmail.com",
+    "password": "Kishu123",
+    "role": "user"
+  },
+  {
+    "email": "rutujapekam1@gmail.com",
+    "password": "12345678",
+    "role": "user"
+  },
+  {
+    "email": "ayush@gmail.com",
+    "password": "12345678",
+    "role": "user"
+  },
+  {
+    "email": "rutuja1@gmail.com",
+    "password": "121212"
+  }
+]

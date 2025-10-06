@@ -1,0 +1,32 @@
+[
+  {
+    "role": "restaurant",
+    "name": "Rutujas foods",
+    "phone": "8605989796",
+    "address": "JM ROAD",
+    "type": "Vegetarian",
+    "qty": "6",
+    "safeBy": "2025-12-12T12:55",
+    "notes": "NA"
+  },
+  {
+    "role": "restaurant",
+    "name": "ayush chi khanawal",
+    "phone": "1234567890",
+    "address": "vanaz metro station",
+    "type": "Vegetarian",
+    "qty": "6",
+    "safeBy": "2025-05-12T08:55",
+    "notes": "NA"
+  },
+  {
+    "role": "restaurant",
+    "name": "saniya pranjali khanawal",
+    "phone": "8605989796",
+    "address": "Mcoe clg",
+    "type": "Vegetarian",
+    "qty": "2",
+    "safeBy": "2025-12-12T12:55",
+    "notes": "No"
+  }
+]
