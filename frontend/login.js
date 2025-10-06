@@ -1,21 +1,19 @@
-// This is login js
+// login.js
 
-// Get DOM elements
 const loginForm = document.getElementById("loginForm");
 const loginMsg = document.getElementById("loginMsg");
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Get form data
   const data = Object.fromEntries(new FormData(loginForm).entries());
-  console.log("📝 Login data:", data);
+  loginMsg.textContent = "Checking credentials...";
 
   try {
     const response = await fetch("http://localhost:5000/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
     const result = await response.json();
@@ -26,21 +24,19 @@ loginForm.addEventListener("submit", async (e) => {
       return;
     }
 
-    // Success
     loginMsg.textContent = "✅ Login successful!";
     loginMsg.classList.remove("danger");
 
-    // Save token or user info if using JWT
+    // Store JWT token for authenticated routes
     localStorage.setItem("token", result.token);
 
-    // Redirect to homepage after login
+    // Redirect to homepage after 1.5 sec
     setTimeout(() => {
       window.location.href = "index.html";
-    }, 1000);
-
+    }, 1500);
   } catch (error) {
-    console.error("❌ Login fetch error:", error);
-    loginMsg.textContent = "❌ Something went wrong!";
+    console.error("❌ Login error:", error);
+    loginMsg.textContent = "❌ Unable to connect to server.";
     loginMsg.classList.add("danger");
   }
 });

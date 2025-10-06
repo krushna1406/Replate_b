@@ -1,179 +1,194 @@
-// This is server.js
+// server.js
+// Robust backend that saves users to Google Sheet and serves listings.
+// Usage: node server.js
+// Make sure your Apps Script web app is deployed and accessible
 
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "replate_secret_key"; 
-// store securely in .env in real projects
-const listingsFile = path.join(__dirname, "listings.json");
-const usersFile = path.join(__dirname, "users.json");
 
-// Middleware to verify JWT
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
-
-  if (!token) return res.status(401).json({ message: "Access denied. No token provided." });
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid or expired token." });
-
-    req.user = user;
-    next();
-  });
-}
 const app = express();
 const PORT = 5000;
-// Middleware
+const JWT_SECRET = "replate_secret_key"; // Replace with env var in production
+
+// ---- Replace this with your deployed Apps Script URL ----
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNAzYAROmefBWGhUyE2mC9Clm7S5-LEpeyIG1I5OMle5f1Htj-bcsdWBOqvEwqRjRY/exec";
+
+const listingsFile = path.join(__dirname, "listings.json");
+
+// ---- resilient fetch: works on Node 18+ or with node-fetch v2/v3 ----
+let fetchImpl;
+try {
+  // try built-in/global fetch (Node 18+)
+  if (typeof globalThis.fetch === "function") {
+    fetchImpl = globalThis.fetch.bind(globalThis);
+  } else {
+    // try node-fetch (v2 or v3)
+    // For node-fetch v3: require('node-fetch').default
+    const nf = require("node-fetch");
+    fetchImpl = nf.default ? nf.default : nf;
+  }
+} catch (err) {
+  console.error("⚠️ Fetch not found. Please install node-fetch (`npm i node-fetch`) or run on Node 18+.");
+  process.exit(1);
+}
+
+// ---- Express setup ----
 app.use(cors());
 app.use(express.json());
-// Test route
-app.get("/", (req, res) => {
-  res.send("Backend is running!");
-});
-// Middleware to verify JWT
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ message: "No token provided" });
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
-    req.user = user;
+// ---- Helper: read listings.json safely ----
+function readListings() {
+  try {
+    if (!fs.existsSync(listingsFile)) return [];
+    const raw = fs.readFileSync(listingsFile, "utf-8");
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error("Error reading listings.json:", err);
+    return [];
+  }
+}
+
+function writeListings(lists) {
+  try {
+    fs.writeFileSync(listingsFile, JSON.stringify(lists, null, 2));
+    return true;
+  } catch (err) {
+    console.error("Error writing listings.json:", err);
+    return false;
+  }
+}
+
+// ---- JWT middleware ----
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Access denied. No token provided." });
+
+  jwt.verify(token, JWT_SECRET, (err, payload) => {
+    if (err) return res.status(403).json({ message: "Invalid or expired token." });
+    req.user = payload;
     next();
   });
 }
 
+// ---- Routes ----
+app.get("/", (req, res) => res.send("Backend is running!"));
 
-// POST route
-// POST route: Create a new listing (protected)
+// GET listings (public)
+app.get("/api/listings", (req, res) => {
+  const lists = readListings();
+  return res.json(lists);
+});
+
+// POST listing (protected)
 app.post("/api/listings", authenticateToken, (req, res) => {
   const listing = req.body;
+  if (!listing || Object.keys(listing).length === 0) {
+    return res.status(400).json({ message: "Listing body required." });
+  }
 
-  let listings = [];
+  const lists = readListings();
+  // optional: attach id & createdBy
+  listing.id = (lists.length ? Number(lists[lists.length - 1].id || lists.length) + 1 : 1);
+  listing.createdBy = req.user.email || "unknown";
+  listing.createdAt = new Date().toISOString();
+
+  lists.push(listing);
+
+  if (!writeListings(lists)) {
+    return res.status(500).json({ message: "Failed to save listing." });
+  }
+
+  console.log("📥 New listing saved:", listing);
+  return res.json({ message: "Listing saved successfully!", data: listing });
+});
+
+// ---- Signup: store user in Google Sheet ----
+app.post("/api/signup", async (req, res) => {
   try {
-    if (fs.existsSync(listingsFile)) {
-      const data = fs.readFileSync(listingsFile, "utf-8");
-      listings = JSON.parse(data || "[]");
+    const { name, email, password } = req.body || {};
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "name, email and password are required." });
     }
-  } catch (err) {
-    console.error("Error reading listings.json:", err);
-    listings = [];
-  }
 
-  listings.push(listing);
+    // Fetch existing users from Google Script
+    const getRes = await fetchImpl(GOOGLE_SCRIPT_URL, { method: "GET" });
+    if (!getRes.ok) {
+      const txt = await getRes.text();
+      console.error("Error fetching users from Google Script:", getRes.status, txt);
+      return res.status(502).json({ message: "Failed to fetch user list from Google Sheets." });
+    }
 
-  try {
-    fs.writeFileSync(listingsFile, JSON.stringify(listings, null, 2));
-    console.log("📥 New listing saved:", listing);
-    res.json({ message: "Listing saved successfully!", data: listing });
+    const users = await getRes.json();
+    // users is expected to be array of objects with 'email' and 'password' keys (as string)
+    const exists = Array.isArray(users) && users.find(u => String(u.email).toLowerCase() === String(email).toLowerCase());
+    if (exists) {
+      return res.status(400).json({ message: "User already exists." });
+    }
+
+    // Post new user to Google Script (Apps Script doPost expects JSON with name,email,password)
+    const postRes = await fetchImpl(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    // Apps Script returns JSON { success: true, message: "..." }
+    const postJson = await postRes.json();
+
+    if (!postRes.ok || !postJson || postJson.success !== true) {
+      console.error("Failed to save user to Google Script:", postRes.status, postJson);
+      return res.status(500).json({ message: "Failed to save user to Google Sheets." });
+    }
+
+    console.log("📝 New user saved to Google Sheet:", email);
+    return res.json({ message: "Signup successful!" });
   } catch (err) {
-    console.error("Error writing listings.json:", err);
-    res.status(500).json({ message: "Failed to save listing" });
+    console.error("Signup error:", err);
+    return res.status(500).json({ message: "Internal server error during signup." });
   }
 });
-// **GET route**
-app.get("/api/listings", (req, res) => {
-  const filePath = path.join(__dirname, "listings.json");
 
+// ---- Login: read users from Google Sheet and validate ----
+app.post("/api/login", async (req, res) => {
   try {
-    const data = fs.readFileSync(filePath, "utf-8");
-    const listings = JSON.parse(data);
-    res.json(listings);
-  } catch (err) {
-    console.error("Error reading listings.json:", err);
-    res.status(500).json({ message: "Failed to fetch listings" });
-  }
-});
-// POST route: User login with JWT
-app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
-  try {
-    const data = fs.readFileSync(usersFile, "utf-8");
-    const users = JSON.parse(data || "[]");
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required." });
+    }
 
-    const user = users.find(u => u.email === email && u.password === password);
+    const getRes = await fetchImpl(GOOGLE_SCRIPT_URL, { method: "GET" });
+    if (!getRes.ok) {
+      const txt = await getRes.text();
+      console.error("Error fetching users from Google Script:", getRes.status, txt);
+      return res.status(502).json({ message: "Failed to fetch user list from Google Sheets." });
+    }
+
+    const users = await getRes.json();
+
+    // Match email & password (exact match). Sheet values may be strings.
+    const user = Array.isArray(users) && users.find(u => String(u.email).toLowerCase() === String(email).toLowerCase() && String(u.password) === String(password));
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    // Generate JWT token (expires in 1 hour)
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: "1h" });
-
-    res.json({ message: "Login successful!", token });
-
+    // Create JWT containing email and optionally name
+    const token = jwt.sign({ email: user.email, name: user.name || "" }, JWT_SECRET, { expiresIn: "1h" });
+    return res.json({ message: "Login successful!", token });
   } catch (err) {
-    console.error("Error reading users.json:", err);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Login error:", err);
+    return res.status(500).json({ message: "Internal server error during login." });
   }
 });
 
-// POST route: User signup
-app.post("/api/signup", (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    let users = [];
-    if (fs.existsSync(usersFile)) {
-      const data = fs.readFileSync(usersFile, "utf-8");
-      users = JSON.parse(data || "[]");
-    }
-
-    // Check if user already exists
-    const exists = users.find(u => u.email === email);
-    if (exists) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    // Add new user
-    users.push({ email, password });
-
-    fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
-    console.log("📝 New user created:", email);
-
-    res.json({ message: "Signup successful!" });
-
-  } catch (err) {
-    console.error("Error reading/writing users.json:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-// POST route: user login
-app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password required" });
-  }
-
-  let users = [];
-  try {
-    if (fs.existsSync(usersFile)) {
-      const data = fs.readFileSync(usersFile, "utf-8");
-      users = JSON.parse(data || "[]");
-    }
-  } catch (err) {
-    console.error("Error reading users.json:", err);
-    users = [];
-  }
-
-  const user = users.find(u => u.email === email && u.password === password);
-
-  if (!user) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-
-  // Generate JWT
-  const token = jwt.sign({ email: user.email, role: user.role || "user" }, JWT_SECRET, { expiresIn: "1h" });
-
-  res.json({ token, user: { email: user.email, role: user.role } });
-});
-
-// Start server
+// ---- Start server ----
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
