@@ -1,5 +1,3 @@
-//This is script.js
-
 // ----- DOM elements -----
 const modal = document.getElementById("modal");
 const openDonateBtn = document.getElementById("open-donate");
@@ -13,6 +11,13 @@ const listContainer = document.getElementById("list");
 const searchInput = document.getElementById("search");
 const filterSelect = document.getElementById("filterTag");
 const resetBtn = document.getElementById("reset");
+
+// --- Auth/UI Elements ---
+const authButtons = document.getElementById("authButtons");
+const profileMenu = document.getElementById("profileMenu");
+const avatar = document.getElementById("avatar");
+const profileDropdown = document.getElementById("profileDropdown");
+const logoutBtn = document.getElementById("logoutBtn");
 
 // ----- Modal functions -----
 function openModal() { modal.style.display = "flex"; }
@@ -86,23 +91,21 @@ async function claim(id) {
     if (!res.ok) throw new Error(data.message || "Failed to delete listing");
 
     alert(data.message || "Listing claimed successfully!");
-    // remove deleted card instantly
     document.querySelector(`button[onclick="claim(${id})"]`).closest(".listing").remove();
-
   } catch (err) {
     console.error("❌ Error:", err);
     alert(err.message || "Something went wrong while claiming.");
   }
 }
 
-// tiny helper to avoid raw HTML injection
+// --- escape helper ---
 function escapeHtml(str) {
   if (!str && str !== 0) return "";
   return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
 }
 
 // ----- Form submit: create listing -----
-form.addEventListener("submit", async (e) => {
+form?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(form).entries());
   formMsg.textContent = "Publishing...";
@@ -140,9 +143,9 @@ form.addEventListener("submit", async (e) => {
 });
 
 // ----- Filters & search -----
-filterSelect.addEventListener("change", applyFilters);
-searchInput.addEventListener("input", applyFilters);
-resetBtn.addEventListener("click", () => {
+filterSelect?.addEventListener("change", applyFilters);
+searchInput?.addEventListener("input", applyFilters);
+resetBtn?.addEventListener("click", () => {
   searchInput.value = "";
   filterSelect.value = "";
   renderListings(allListings);
@@ -169,17 +172,32 @@ function applyFilters() {
   renderListings(filtered);
 }
 
-// ----- Check login and redirect if not -----
-function checkLogin() {
+// ----- Auth UI -----
+function updateAuthUI() {
   const token = localStorage.getItem("token");
-  if (!token) {
-    alert("You must login first!");
-    window.location.href = "login.html";
+  if (token) {
+    authButtons.style.display = "none";
+    profileMenu.style.display = "block";
+  } else {
+    authButtons.style.display = "flex";
+    profileMenu.style.display = "none";
   }
 }
 
-// initial load
+// Toggle dropdown
+avatar?.addEventListener("click", () => {
+  profileDropdown.style.display =
+    profileDropdown.style.display === "block" ? "none" : "block";
+});
+
+logoutBtn?.addEventListener("click", () => {
+  localStorage.removeItem("token");
+  alert("Logged out successfully!");
+  window.location.reload();
+});
+
+// ----- Check login and load -----
 window.addEventListener("DOMContentLoaded", () => {
-  checkLogin();
+  updateAuthUI();
   fetchAndStoreListings();
 });

@@ -13,6 +13,56 @@
     rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* --- Profile Avatar --- */
+    .profile-menu {
+      position: relative;
+      display: none;
+    }
+
+    .profile-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: 48px;
+      right: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      display: none;
+      min-width: 160px;
+      z-index: 100;
+    }
+
+    .profile-dropdown a,
+    .profile-dropdown button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 14px;
+      border: none;
+      background: none;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .profile-dropdown a:hover,
+    .profile-dropdown button:hover {
+      background: #f2f2f2;
+    }
+  </style>
 </head>
 
 <body>
@@ -27,12 +77,20 @@
         <a class="link" href="#how">How it works</a>
         <a class="link" href="#listings">Nearby surplus</a>
         <a class="link" href="#second-path">Biogas</a>
-        <!-- <a class="link" href="#">Impact</a> -->
-        <div class="nav-cta">
+
+        <div class="nav-cta" id="authButtons">
           <a href="login.html" class="btn btn-ghost">Log in</a>
           <a href="signup.html" class="btn btn-primary">Sign Up</a>
+          <!-- <button class="btn btn-primary" id="open-donate">Offer Surplus</button> -->
+        </div>
 
-          <button class="btn btn-primary" id="open-donate">Offer Surplus</button>
+        <!-- Profile Menu (hidden by default) -->
+        <div class="profile-menu" id="profileMenu">
+          <div class="profile-avatar" id="avatar">👤</div>
+          <div class="profile-dropdown" id="profileDropdown">
+            <!-- <a href="#">My Listings</a> -->
+            <button id="logoutBtn">Logout</button>
+          </div>
         </div>
       </nav>
     </div>
@@ -175,7 +233,8 @@
       </div>
       <div>
         <h4>Contact</h4>
-        <a href="https://mail.google.com/mail/u/0/#inbox?compose=jrjtXJTzpTnbFPRGwJDqxSPjTKXGwVFrNsjDXjCXrfvfgBznxcmTzqHgQLLHhmVzBKcRRLbX" target="_blank">replate.test@gmail.com</a><br />
+        <a href="https://mail.google.com/mail/u/0/#inbox?compose=jrjtXJTzpTnbFPRGwJDqxSPjTKXGwVFrNsjDXjCXrfvfgBznxcmTzqHgQLLHhmVzBKcRRLbX"
+          target="_blank">replate.test@gmail.com</a><br />
         <!-- <a href="9552949772">+91 98765 43210</a><br /> -->
         <!-- <a href="">WhatsApp</a> -->
       </div>
