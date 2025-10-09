@@ -306,7 +306,9 @@
     }
 
     .listing {
-      background: linear-gradient(180deg, rgba(255, 255, 255, .03), transparent);
+      background: radial-gradient(1200px 600px at 10% -10%, #13202e 0%, transparent 50%),
+        radial-gradient(1200px 600px at 90% -20%, #0c2a20 0%, transparent 55%),
+        var(--bg);
       border: 1px solid rgba(255, 255, 255, .08);
       border-radius: 16px;
       padding-left: 20px;

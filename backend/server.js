@@ -1,5 +1,4 @@
-// server.js
-// Backend that saves users to Google Sheet and handles listings with delete functionality.
+// Backend that saves users to Google Sheet and handles listings with webhook + delete functionality.
 
 const fs = require("fs");
 const path = require("path");
@@ -11,7 +10,11 @@ const app = express();
 const PORT = 5000;
 const JWT_SECRET = "replate_secret_key"; // Replace with env var in production
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNAzYAROmefBWGhUyE2mC9Clm7S5-LEpeyIG1I5OMle5f1Htj-bcsdWBOqvEwqRjRY/exec";
+// Replace with your actual Apps Script Web App URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0H76qGwIXYBm1sYEAdDH5hxe34NlhFIZ7cneuKlLM9dvMG2hJ34VeJ42aw1vbGp9O/exec";
+
+// Replace this with your own n8n webhook URL (Production, not /webhook-test)
+const N8N_WEBHOOK_URL = " https://lisa-electromotive-kaliyah.ngrok-free.dev/webhook/new-listing-v2";
 
 const listingsFile = path.join(__dirname, "listings.json");
 
@@ -77,25 +80,57 @@ app.get("/api/listings", (req, res) => {
   res.json(lists);
 });
 
-// Add a listing
-app.post("/api/listings", authenticateToken, (req, res) => {
+// Add a new listing (Webhook Trigger)
+app.post("/api/listings", authenticateToken, async (req, res) => {
   const listing = req.body;
   if (!listing || Object.keys(listing).length === 0) {
     return res.status(400).json({ message: "Listing body required." });
   }
 
+  // Save listing locally
   const lists = readListings();
   listing.id = (lists.length ? Number(lists[lists.length - 1].id || lists.length) + 1 : 1);
   listing.createdBy = req.user.email || "unknown";
   listing.createdAt = new Date().toISOString();
-
   lists.push(listing);
-  if (!writeListings(lists)) return res.status(500).json({ message: "Failed to save listing." });
+
+  if (!writeListings(lists)) {
+    return res.status(500).json({ message: "Failed to save listing." });
+  }
 
   console.log("📥 New listing saved:", listing);
+
+  // Respond to frontend immediately (important!)
   res.json({ message: "Listing saved successfully!", data: listing });
+
+  // Trigger n8n webhook in background (non-blocking)
+  setTimeout(async () => {
+    try {
+      const webhookRes = await fetchImpl(N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: listing.title,
+          location: listing.location,
+          quantity: listing.quantity,
+          contact: listing.contact,
+          createdBy: listing.createdBy,
+          createdAt: listing.createdAt,
+        }),
+      });
+
+      if (webhookRes.ok) {
+        console.log("🔔 n8n webhook triggered successfully!");
+      } else {
+        console.error("⚠️ n8n webhook responded with:", webhookRes.status);
+      }
+    } catch (err) {
+      console.error("⚠️ Failed to trigger n8n webhook:", err);
+    }
+  }, 100); // run after short delay
 });
 
+// Delete a listing
 // Delete a listing
 app.delete("/api/listings/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
@@ -103,7 +138,7 @@ app.delete("/api/listings/:id", authenticateToken, (req, res) => {
 
   let lists = readListings();
   const initialLength = lists.length;
-  lists = lists.filter(l => String(l.id) !== String(id));
+  lists = lists.filter((l) => String(l.id) !== String(id));
 
   if (lists.length === initialLength) {
     return res.status(404).json({ message: "Listing not found." });
@@ -129,7 +164,7 @@ app.post("/api/signup", async (req, res) => {
     if (!getRes.ok) return res.status(502).json({ message: "Failed to fetch user list." });
 
     const users = await getRes.json();
-    const exists = Array.isArray(users) && users.find(u => String(u.email).toLowerCase() === String(email).toLowerCase());
+    const exists = Array.isArray(users) && users.find((u) => String(u.email).toLowerCase() === String(email).toLowerCase());
     if (exists) return res.status(400).json({ message: "User already exists." });
 
     const postRes = await fetchImpl(GOOGLE_SCRIPT_URL, {
@@ -160,7 +195,7 @@ app.post("/api/login", async (req, res) => {
     if (!getRes.ok) return res.status(502).json({ message: "Failed to fetch user list." });
 
     const users = await getRes.json();
-    const user = Array.isArray(users) && users.find(u => String(u.email).toLowerCase() === String(email).toLowerCase() && String(u.password) === String(password));
+    const user = Array.isArray(users) && users.find((u) => String(u.email).toLowerCase() === String(email).toLowerCase() && String(u.password) === String(password));
 
     if (!user) return res.status(401).json({ message: "Invalid credentials." });
 

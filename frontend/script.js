@@ -58,9 +58,41 @@ function renderListings(listings) {
       <p>Contact: ${escapeHtml(listing.phone)}</p>
       <p>Notes: ${escapeHtml(listing.notes || "-")}</p>
       <p>Safe-by: ${escapeHtml(listing.safeBy || "-")}</p>
+
+      <div style="display:flex; gap:8px; margin-top:12px">
+        <button class="btn btn-primary" onclick="claim(${listing.id})">Claim</button>
+      </div>
     `;
     listContainer.appendChild(div);
   });
+}
+
+async function claim(id) {
+  if (!confirm("Are you sure you want to claim this listing?")) return;
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Please login first.");
+
+    const res = await fetch(`http://localhost:5000/api/listings/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to delete listing");
+
+    alert(data.message || "Listing claimed successfully!");
+    // remove deleted card instantly
+    document.querySelector(`button[onclick="claim(${id})"]`).closest(".listing").remove();
+
+  } catch (err) {
+    console.error("❌ Error:", err);
+    alert(err.message || "Something went wrong while claiming.");
+  }
 }
 
 // tiny helper to avoid raw HTML injection
