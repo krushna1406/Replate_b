@@ -1,54 +1,46 @@
 // Backend that saves users to Google Sheet and handles listings with webhook + delete functionality.
-import express from "express"; // or const express = require("express");
+import express from "express"; // Node 18+ ES module import
 import path from "path";
 import { fileURLToPath } from "url";
+import cors from "cors";
+import jwt from "jsonwebtoken";
+import fs from "fs";
 
+// ---- Express setup ----
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve static files
+app.use(cors());
+app.use(express.json());
+
+// Serve static frontend files
 app.use(express.static(path.join(__dirname, "Public")));
 
-// Optional: fallback to index.html
+// Fallback to index.html for frontend routing
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "Public", "index.html"));
 });
 
-const fs = require("fs");
-path = require("path");
-const express = require("express");
-const cors = require("cors");
-const jwt = require("jsonwebtoken");
-
-const PORT = 5000;
-const JWT_SECRET = "replate_secret_key"; // Replace with env var in production
-
-// Replace with your actual Apps Script Web App URL
+// ---- Config ----
+const JWT_SECRET = "replate_secret_key"; // Can move to env later
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEJYjuob6Z9PGIrmtAwGPMOGvz5yY36t1YsQhxQQYTarh0r_uNIBPtgBwpAytNCvEr/exec";
-
-// Replace this with your own n8n webhook URL (Production, not /webhook-test)
-// const N8N_WEBHOOK_URL = " https://lisa-electromotive-kaliyah.ngrok-free.dev/webhook/new-listing-v2";
-
+// const N8N_WEBHOOK_URL = "https://lisa-electromotive-kaliyah.ngrok-free.dev/webhook/new-listing-v2"; // uncomment if used
 const listingsFile = path.join(__dirname, "listings.json");
 
-// ---- resilient fetch ----
+// ---- Resilient fetch ----
 let fetchImpl;
 try {
   if (typeof globalThis.fetch === "function") {
     fetchImpl = globalThis.fetch.bind(globalThis);
   } else {
-    const nf = require("node-fetch");
+    const nf = await import("node-fetch");
     fetchImpl = nf.default ? nf.default : nf;
   }
 } catch (err) {
-  console.error("⚠️ Install node-fetch or run on Node 18+.");
+  console.error("⚠️ Install node-fetch or run Node 18+.");
   process.exit(1);
 }
-
-// ---- Express setup ----
-app.use(cors());
-app.use(express.json());
 
 // ---- Helper functions ----
 function readListings() {
@@ -94,57 +86,42 @@ app.get("/api/listings", (req, res) => {
   res.json(lists);
 });
 
-// Add a new listing (Webhook Trigger)
+// Add a new listing
 app.post("/api/listings", authenticateToken, async (req, res) => {
   const listing = req.body;
-  if (!listing || Object.keys(listing).length === 0) {
+  if (!listing || Object.keys(listing).length === 0)
     return res.status(400).json({ message: "Listing body required." });
-  }
 
-  // Save listing locally
   const lists = readListings();
   listing.id = (lists.length ? Number(lists[lists.length - 1].id || lists.length) + 1 : 1);
   listing.createdBy = req.user.email || "unknown";
   listing.createdAt = new Date().toISOString();
   lists.push(listing);
 
-  if (!writeListings(lists)) {
+  if (!writeListings(lists))
     return res.status(500).json({ message: "Failed to save listing." });
-  }
 
   console.log("📥 New listing saved:", listing);
 
-  // Respond to frontend immediately (important!)
   res.json({ message: "Listing saved successfully!", data: listing });
 
-  // Trigger n8n webhook in background (non-blocking)
-  setTimeout(async () => {
-    try {
-      const webhookRes = await fetchImpl(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: listing.title,
-          location: listing.location,
-          quantity: listing.quantity,
-          contact: listing.contact,
-          createdBy: listing.createdBy,
-          createdAt: listing.createdAt,
-        }),
-      });
-
-      if (webhookRes.ok) {
-        console.log("🔔 n8n webhook triggered successfully!");
-      } else {
-        console.error("⚠️ n8n webhook responded with:", webhookRes.status);
+  // Trigger n8n webhook asynchronously
+  if (typeof N8N_WEBHOOK_URL !== "undefined") {
+    setTimeout(async () => {
+      try {
+        const webhookRes = await fetchImpl(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(listing),
+        });
+        console.log("🔔 n8n webhook triggered:", webhookRes.ok ? "Success" : "Failed");
+      } catch (err) {
+        console.error("⚠️ Failed to trigger n8n webhook:", err);
       }
-    } catch (err) {
-      console.error("⚠️ Failed to trigger n8n webhook:", err);
-    }
-  }, 100); // run after short delay
+    }, 100);
+  }
 });
 
-// Delete a listing
 // Delete a listing
 app.delete("/api/listings/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
@@ -154,25 +131,22 @@ app.delete("/api/listings/:id", authenticateToken, (req, res) => {
   const initialLength = lists.length;
   lists = lists.filter((l) => String(l.id) !== String(id));
 
-  if (lists.length === initialLength) {
+  if (lists.length === initialLength)
     return res.status(404).json({ message: "Listing not found." });
-  }
 
-  if (!writeListings(lists)) {
+  if (!writeListings(lists))
     return res.status(500).json({ message: "Failed to delete listing." });
-  }
 
   console.log(`🗑️ Listing with ID ${id} deleted.`);
   res.json({ message: "Listing claimed and removed successfully!" });
 });
 
-// ---- Signup ----
+// Signup
 app.post("/api/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "name, email and password are required." });
-    }
+    if (!name || !email || !password)
+      return res.status(400).json({ message: "name, email and password required." });
 
     const getRes = await fetchImpl(GOOGLE_SCRIPT_URL, { method: "GET" });
     if (!getRes.ok) return res.status(502).json({ message: "Failed to fetch user list." });
@@ -187,9 +161,7 @@ app.post("/api/signup", async (req, res) => {
       body: JSON.stringify({ name, email, password }),
     });
     const postJson = await postRes.json();
-    if (!postRes.ok || !postJson.success) {
-      return res.status(500).json({ message: "Failed to save user." });
-    }
+    if (!postRes.ok || !postJson.success) return res.status(500).json({ message: "Failed to save user." });
 
     console.log("📝 New user saved:", email);
     res.json({ message: "Signup successful!" });
@@ -199,7 +171,7 @@ app.post("/api/signup", async (req, res) => {
   }
 });
 
-// ---- Login ----
+// Login
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -221,6 +193,6 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// ---- Start server ----
-PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// Start server on Render port
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running at port ${PORT}`));
