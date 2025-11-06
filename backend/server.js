@@ -1,4 +1,19 @@
 // Backend that saves users to Google Sheet and handles listings with webhook + delete functionality.
+import express from "express"; // or const express = require("express");
+import path from "path";
+import { fileURLToPath } from "url";
+
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+
+// Optional: fallback to index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 const fs = require("fs");
 const path = require("path");
@@ -6,7 +21,6 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
-const app = express();
 const PORT = 5000;
 const JWT_SECRET = "replate_secret_key"; // Replace with env var in production
 
@@ -208,4 +222,5 @@ app.post("/api/login", async (req, res) => {
 });
 
 // ---- Start server ----
+PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
