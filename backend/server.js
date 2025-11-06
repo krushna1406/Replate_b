@@ -16,7 +16,7 @@ app.get("*", (req, res) => {
 });
 
 const fs = require("fs");
-const path = require("path");
+path = require("path");
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
