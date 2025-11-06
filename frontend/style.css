@@ -123,7 +123,7 @@
       appearance: none;
       border: none;
       cursor: pointer;
-      padding: 16px 16px;
+      padding: 18px 16px;
       border-radius: 16px;
       font-weight: 600;
       letter-spacing: .2px;
@@ -145,7 +145,7 @@
     .btn-ghost {
       background: transparent;
       color: var(--text);
-      border: 1px solid rgba(255, 255, 255, .12)
+      border: 1px solid rgba(255, 255, 255, .26);
     }
 
     /* Hero */
@@ -190,6 +190,10 @@
       flex-wrap: wrap;
       margin-top: 22px;
       padding: 10px;
+    }
+    
+    .hero-cta :hover {
+      box-shadow: 0px 0px 5px 0px #8b8b8b9c;
     }
 
     div>img {
@@ -313,6 +317,11 @@
       border-radius: 16px;
       padding-left: 20px;
       transition: transform .15s ease, box-shadow .2s ease
+    }
+
+    .listing h3{
+      font-size: 26px;
+      font-weight: bolder;
     }
 
     .listing:hover {

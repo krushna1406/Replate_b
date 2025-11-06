@@ -11,10 +11,10 @@ const PORT = 5000;
 const JWT_SECRET = "replate_secret_key"; // Replace with env var in production
 
 // Replace with your actual Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0H76qGwIXYBm1sYEAdDH5hxe34NlhFIZ7cneuKlLM9dvMG2hJ34VeJ42aw1vbGp9O/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEJYjuob6Z9PGIrmtAwGPMOGvz5yY36t1YsQhxQQYTarh0r_uNIBPtgBwpAytNCvEr/exec";
 
 // Replace this with your own n8n webhook URL (Production, not /webhook-test)
-const N8N_WEBHOOK_URL = " https://lisa-electromotive-kaliyah.ngrok-free.dev/webhook/new-listing-v2";
+// const N8N_WEBHOOK_URL = " https://lisa-electromotive-kaliyah.ngrok-free.dev/webhook/new-listing-v2";
 
 const listingsFile = path.join(__dirname, "listings.json");
 
