@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "Public")));
 // ---- Config ----
 const JWT_SECRET = process.env.JWT_SECRET || "replate_secret_key"; // move to env var
 const GOOGLE_USERS_URL =
-  "https://script.google.com/macros/s/AKfycbz3AN5uZoL6k0hELn0MRQAq7TR78Owort13OsH-SX4mO12p8KC1eTuc558WWDgHNoad/exec";
+  "https://script.google.com/macros/s/AKfycbzsdAStNC66ILczZVosZqtRwB1fwSLWI6cNbYJeledFTaZDcIyCcfUCTo26Naj-GSc/exec";
 const GOOGLE_LISTINGS_URL =
   "https://script.google.com/macros/s/AKfycbxb8UfJvus8Z5DFLLjKdgHSxWfCO1hXV8OonkruDvjzkmQWgaXvrdn8ncT6Y9J_1Ow0/exec"; // separate Apps Script for listings
 
@@ -117,55 +117,50 @@ app.delete("/api/listings/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// Signup
-app.post("/api/signup", async (req, res) => {
+// ✅ Signup Route
+app.post("/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body || {};
-    if (!name || !email || !password)
-      return res.status(400).json({ message: "All fields required." });
-
-    const getRes = await fetchImpl(GOOGLE_USERS_URL + "?action=get");
-    const users = await getRes.json();
-    const exists = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (exists) return res.status(400).json({ message: "User already exists." });
-
-    const postRes = await fetchImpl(GOOGLE_USERS_URL + "?action=add", {
+    const response = await fetch(SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify(req.body),
     });
-    const postJson = await postRes.json();
-    if (!postRes.ok || !postJson.success)
-      return res.status(500).json({ message: "Failed to save user." });
 
-    res.json({ message: "Signup successful!" });
+    const data = await response.json();
+    res.json(data);
   } catch (err) {
-    console.error("Signup error:", err);
-    res.status(500).json({ message: "Internal signup error." });
+    console.error("Signup Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// Login
-app.post("/api/login", async (req, res) => {
+// ✅ Login Route
+app.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body || {};
-    if (!email || !password) return res.status(400).json({ message: "Email and password required." });
+    const { email, password } = req.body;
 
-    const getRes = await fetchImpl(GOOGLE_USERS_URL + "?action=get");
-    const users = await getRes.json();
+    const response = await fetch(SCRIPT_URL);
+    const users = await response.json();
+
     const user = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+      (u) =>
+        u.email.trim().toLowerCase() === email.trim().toLowerCase() &&
+        u.password.trim() === password.trim()
     );
 
-    if (!user) return res.status(401).json({ message: "Invalid credentials." });
-
-    const token = jwt.sign({ email: user.email, name: user.name || "" }, JWT_SECRET, { expiresIn: "1h" });
-    res.json({ message: "Login successful!", token });
+    if (user) {
+      res.json({ success: true, message: "Login successful", user });
+    } else {
+      res.json({ success: false, message: "Invalid credentials" });
+    }
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ message: "Internal login error." });
+    console.error("Login Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+app.listen(5000, () => console.log("Server running on port 5000"));
+
 
 // ---- SPA fallback ----
 app.get("*", (req, res) => {
