@@ -1,7 +1,8 @@
-// signup.js
-
 const signupForm = document.getElementById("signupForm");
 const signupMsg = document.getElementById("signupMsg");
+
+// ✅ Use your Render URL here
+const BASE_URL = "https://replate-food.onrender.com";
 
 signupForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -10,7 +11,7 @@ signupForm.addEventListener("submit", async (e) => {
   signupMsg.textContent = "Creating account...";
 
   try {
-    const res = await fetch("http://localhost:5000/api/signup", {
+    const res = await fetch(`${BASE_URL}/api/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -27,7 +28,6 @@ signupForm.addEventListener("submit", async (e) => {
     signupMsg.textContent = "✅ Account created successfully!";
     signupMsg.classList.remove("danger");
 
-    // Redirect to login page after short delay
     setTimeout(() => {
       window.location.href = "login.html";
     }, 1500);

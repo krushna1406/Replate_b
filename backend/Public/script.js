@@ -1,3 +1,6 @@
+// ✅ Base URL for Render backend
+const BASE_URL = "https://replate-food.onrender.com";
+
 // ----- DOM elements -----
 const modal = document.getElementById("modal");
 const openDonateBtn = document.getElementById("open-donate");
@@ -35,7 +38,7 @@ let allListings = [];
 
 async function fetchAndStoreListings() {
   try {
-    const res = await fetch("http://localhost:5000/api/listings");
+    const res = await fetch(`${BASE_URL}/api/listings`);
     if (!res.ok) throw new Error("Failed to fetch listings");
     const listings = await res.json();
     allListings = listings;
@@ -58,11 +61,11 @@ function renderListings(listings) {
     div.className = "card listing";
     div.innerHTML = `
       <h3>${escapeHtml(listing.name)} (${escapeHtml(listing.role)})</h3>
-      <p>Type: ${escapeHtml(listing.type)} | Qty: ${escapeHtml(listing.qty)}</p>
+      <p>Type: ${escapeHtml(listing.type)} | Qty: ${escapeHtml(listing.quantity)}</p>
       <p>Pickup Location: ${escapeHtml(listing.address)}</p>
       <p>Contact: ${escapeHtml(listing.phone)}</p>
       <p>Notes: ${escapeHtml(listing.notes || "-")}</p>
-      <p>Safe-by: ${escapeHtml(listing.safeBy || "-")}</p>
+      <p>Safe-by: ${escapeHtml(listing.safeby || "-")}</p>
 
       <div style="display:flex; gap:8px; margin-top:12px">
         <button class="btn btn-primary" onclick="claim(${listing.id})">Claim</button>
@@ -79,7 +82,7 @@ async function claim(id) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Please login first.");
 
-    const res = await fetch(`http://localhost:5000/api/listings/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/listings/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -98,10 +101,11 @@ async function claim(id) {
   }
 }
 
-// --- escape helper ---
 function escapeHtml(str) {
   if (!str && str !== 0) return "";
-  return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
+  return String(str).replace(/[&<>"']/g, s => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[s]));
 }
 
 // ----- Form submit: create listing -----
@@ -114,7 +118,7 @@ form?.addEventListener("submit", async (e) => {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No authentication token found. Please login.");
 
-    const response = await fetch("http://localhost:5000/api/listings", {
+    const response = await fetch(`${BASE_URL}/api/listings`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -128,7 +132,6 @@ form?.addEventListener("submit", async (e) => {
     await response.json();
     formMsg.textContent = "✅ Listing created successfully!";
     form.reset();
-
     await fetchAndStoreListings();
 
     setTimeout(() => {
@@ -156,8 +159,10 @@ function applyFilters() {
   let filtered = allListings.slice();
 
   if (filter) {
-    filtered = filtered.filter(l => (l.type || "").toLowerCase() === filter ||
-      (l.role || "").toLowerCase() === filter);
+    filtered = filtered.filter(l =>
+      (l.type || "").toLowerCase() === filter ||
+      (l.role || "").toLowerCase() === filter
+    );
   }
 
   const term = searchInput.value.trim().toLowerCase();
@@ -184,7 +189,6 @@ function updateAuthUI() {
   }
 }
 
-// Toggle dropdown
 avatar?.addEventListener("click", () => {
   profileDropdown.style.display =
     profileDropdown.style.display === "block" ? "none" : "block";
@@ -196,7 +200,6 @@ logoutBtn?.addEventListener("click", () => {
   window.location.reload();
 });
 
-// ----- Check login and load -----
 window.addEventListener("DOMContentLoaded", () => {
   updateAuthUI();
   fetchAndStoreListings();

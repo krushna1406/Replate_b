@@ -1,7 +1,8 @@
-// login.js
-
 const loginForm = document.getElementById("loginForm");
 const loginMsg = document.getElementById("loginMsg");
+
+// ✅ Use your Render URL here
+const BASE_URL = "https://replate-food.onrender.com";
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -10,7 +11,7 @@ loginForm.addEventListener("submit", async (e) => {
   loginMsg.textContent = "Checking credentials...";
 
   try {
-    const response = await fetch("http://localhost:5000/api/login", {
+    const response = await fetch(`${BASE_URL}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -26,11 +27,8 @@ loginForm.addEventListener("submit", async (e) => {
 
     loginMsg.textContent = "✅ Login successful!";
     loginMsg.classList.remove("danger");
-
-    // Store JWT token for authenticated routes
     localStorage.setItem("token", result.token);
 
-    // Redirect to homepage after 1.5 sec
     setTimeout(() => {
       window.location.href = "index.html";
     }, 1500);
