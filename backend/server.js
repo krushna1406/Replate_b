@@ -22,8 +22,8 @@ app.use(express.static(path.join(__dirname, "Public")));
 const JWT_SECRET = process.env.JWT_SECRET || "replate_secret_key";
 
 // <-- Replace these with your deployed Apps Script URLs -->
-const GOOGLE_USERS_URL = "https://script.google.com/macros/s/AKfycbwVx4CsD8xtCjTAzrX83X641pazwU6ccp7KtV_VewVQYVTYRruJWzdWhJZD3arPhb-2/exec";
-const GOOGLE_LISTINGS_URL = "https://script.google.com/macros/s/AKfycbzqhUv7dPp9599PmcxlnCJgz47uuypo94pzQMEmDo7PVt0Q6p9eKBRvfpxPP7V7UPNG/exec";
+const GOOGLE_USERS_URL = "https://script.google.com/macros/s/AKfycbz2Es9HpVRFV_GNlbVI1SyYtJQFUYie5VuC2P7S6vyeF2Wd62Amcy5O6W_KQ3BKJpnI/exec";
+const GOOGLE_LISTINGS_URL = "https://script.google.com/macros/s/AKfycbwGHYsc_Kxcjo5CjelqGGvC-f-SSei2qsYKc3h308J7DlwZvRypQuS_lKZc71rS83as/exec";
 
 // safe fetch
 let fetchImpl;
