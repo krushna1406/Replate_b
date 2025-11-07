@@ -11,7 +11,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ---- Middlewares ----
-app.use(cors({ origin: "https://replate-food.onrender.com" })); // frontend URL
+app.use(cors({
+  origin: ["https://replate-food.onrender.com", "http://localhost:3000"],
+  methods: ["GET", "POST", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
 // ---- Serve static frontend ----
@@ -117,50 +122,58 @@ app.delete("/api/listings/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Signup Route
-app.post("/signup", async (req, res) => {
+// Signup
+app.post("/api/signup", async (req, res) => {
   try {
-    const response = await fetch(SCRIPT_URL, {
+    const { name, email, password } = req.body || {};
+    if (!name || !email || !password)
+      return res.status(400).json({ message: "All fields required." });
+
+    const getRes = await fetchImpl(GOOGLE_USERS_URL + "?action=get");
+    const users = await getRes.json();
+    const exists = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    if (exists) return res.status(400).json({ message: "User already exists." });
+
+    const postRes = await fetchImpl(GOOGLE_USERS_URL + "?action=add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify({ name, email, password }),
     });
+    const postJson = await postRes.json();
+    if (!postRes.ok || !postJson.success)
+      return res.status(500).json({ message: "Failed to save user." });
 
-    const data = await response.json();
-    res.json(data);
+    res.json({ message: "Signup successful!" });
   } catch (err) {
-    console.error("Signup Error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Signup error:", err);
+    res.status(500).json({ message: "Internal signup error." });
   }
 });
 
-// ✅ Login Route
-app.post("/login", async (req, res) => {
+// Login
+app.post("/api/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
+    if (!email || !password) return res.status(400).json({ message: "Email and password required." });
 
-    const response = await fetch(SCRIPT_URL);
-    const users = await response.json();
-
+    const getRes = await fetchImpl(GOOGLE_USERS_URL + "?action=get");
+    const users = await getRes.json();
     const user = users.find(
-      (u) =>
-        u.email.trim().toLowerCase() === email.trim().toLowerCase() &&
-        u.password.trim() === password.trim()
+      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
     );
 
-    if (user) {
-      res.json({ success: true, message: "Login successful", user });
-    } else {
-      res.json({ success: false, message: "Invalid credentials" });
+    if (!user) {
+      console.log("Login failed:", email, password, "Users fetched:", users);
+      return res.status(401).json({ message: "Invalid credentials." });
     }
+
+    const token = jwt.sign({ email: user.email, name: user.name || "" }, JWT_SECRET, { expiresIn: "1h" });
+    res.json({ message: "Login successful!", token });
   } catch (err) {
-    console.error("Login Error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Internal login error." });
   }
 });
-
-app.listen(5000, () => console.log("Server running on port 5000"));
-
 
 // ---- SPA fallback ----
 app.get("*", (req, res) => {
